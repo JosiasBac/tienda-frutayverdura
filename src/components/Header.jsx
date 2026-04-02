@@ -20,7 +20,7 @@ export default function Header() {
                         onClick={() => navigate("/carrito")}
                         className="hover:text-[#0d631b] relative"
                     >
-                        Carrito ({totalItems.toFixed(1)}kg)
+                        Carrito
                     </button>
                 </div>
             </nav>

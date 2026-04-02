@@ -13,14 +13,15 @@ export function CarritoProvider({ children }) {
     }, [carrito])
 
     function añadirProducto(producto) {
+        const cantidad = producto.kg || 1
         setCarrito(prev => {
             const existe = prev.find(p => p.nombre === producto.nombre)
             if (existe) {
                 return prev.map(p =>
-                    p.nombre === producto.nombre ? { ...p, kg: p.kg + 1 } : p
+                    p.nombre === producto.nombre ? { ...p, kg: p.kg + cantidad } : p
                 )
             }
-            return [...prev, { ...producto, kg: 1 }]
+            return [...prev, { ...producto, kg: cantidad }]
         })
     }
 
