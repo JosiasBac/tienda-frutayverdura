@@ -13,7 +13,7 @@ export default function ProductCard({ nombre, precio, unidad, imagen }) {
             return
         }
         const num = parseFloat(cantidad)
-        if (!num || num <= 0) return
+        if (!num || num <= 0.5) return
         añadirProducto({ nombre, precio, unidad, imagen, kg: num })
         setMostrarInput(false)
         setCantidad("")
@@ -38,7 +38,7 @@ export default function ProductCard({ nombre, precio, unidad, imagen }) {
             {mostrarInput && (
                 <input
                     type="number"
-                    min="0.5"
+                    min={unidad === "Kg" ? "0.5" : "1"}
                     step={unidad === "Kg" ? "0.5" : "1"}
                     placeholder={unidad === "Kg" ? "Kilos (ej: 1.5)" : "Unidades (ej: 2)"}
                     value={cantidad}
