@@ -18,7 +18,10 @@ export default function Checkout() {
         const e = {}
         if (!nombre.trim()) e.nombre = "El nombre es obligatorio"
         if (!metodoPago) e.metodoPago = "Selecciona un método de pago"
-        if (metodoPago === "stripe" && !email.trim()) e.email = "El email es obligatorio para pago con tarjeta"
+        if (metodoPago === "stripe") {
+            if (!email.trim()) e.email = "El email es obligatorio para pago con tarjeta"
+            else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "El email no es válido"
+        }
         setErrores(e)
         return Object.keys(e).length === 0
     }
@@ -56,8 +59,31 @@ export default function Checkout() {
         navigate("/confirmacion", { state: { nombre, email, metodoPago: "efectivo", total: totalPrecio } })
     }
 
-    function handleStripe() {
-        alert("Pago con tarjeta — próximamente conectamos Stripe")
+    async function handleStripe() {
+        setCargando(true)
+        try {
+            const response = await fetch(
+                "https://niuikeniimuzyxqsafgk.supabase.co/functions/v1/crear-pago",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pdWlrZW5paW11enl4cXNhZmdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMTk0OTksImV4cCI6MjA5MDY5NTQ5OX0.DdxJd73brzD9wYXC_DVtHlayemW747WRxmrn64d7AyE`,
+                    },
+                    body: JSON.stringify({ carrito, total: totalPrecio, nombre, email }),
+                }
+            )
+            const data = await response.json()
+            if (data.url) {
+                localStorage.setItem("carrito_confirmado", JSON.stringify(carrito))
+                window.location.href = data.url
+            } else {
+                alert("Error al crear el pago: " + data.error)
+            }
+        } catch (error) {
+            alert("Error de conexión: " + error.message)
+        }
+        setCargando(false)
     }
 
     if (carrito.length === 0) {
@@ -146,9 +172,10 @@ export default function Checkout() {
                     {metodoPago === "stripe" ? (
                         <button
                             onClick={handleStripe}
-                            className="w-full bg-[#0d631b] text-white font-bold py-4 rounded-full hover:scale-105 transition-transform"
+                            disabled={cargando}
+                            className="w-full bg-[#0d631b] text-white font-bold py-4 rounded-full hover:scale-105 transition-transform disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100"
                         >
-                            Pagar {totalPrecio.toFixed(2)}€ con tarjeta
+                            {cargando ? "Conectando con Stripe..." : `Pagar ${totalPrecio.toFixed(2)}€ con tarjeta`}
                         </button>
                     ) : (
                         <button
