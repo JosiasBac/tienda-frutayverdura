@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: `${req.headers.get("origin")}/confirmacion?metodo=stripe&nombre=${encodeURIComponent(nombre)}&email=${encodeURIComponent(email || "")}&total=${total}`,
+      success_url: `${req.headers.get("origin")}/confirmacion?metodo=stripe&nombre=${encodeURIComponent(nombre)}&email=${encodeURIComponent(email || "")}&total=${total}&hora=${encodeURIComponent(horaRecogida || "")}`,
       cancel_url: `${req.headers.get("origin")}/checkout`,
       customer_email: email || undefined,
       metadata: {

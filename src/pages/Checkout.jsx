@@ -13,11 +13,13 @@ export default function Checkout() {
     const [errores, setErrores] = useState({})
     const [paso, setPaso] = useState(1)
     const [cargando, setCargando] = useState(false)
+    const [horaRecogida, setHoraRecogida] = useState("")
 
     function validar() {
         const e = {}
         if (!nombre.trim()) e.nombre = "El nombre es obligatorio"
         if (!metodoPago) e.metodoPago = "Selecciona un método de pago"
+        if (!horaRecogida) e.horaRecogida = "La hora de recogida es obligatoria"
         if (metodoPago === "stripe") {
             if (!email.trim()) e.email = "El email es obligatorio para pago con tarjeta"
             else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "El email no es válido"
@@ -38,7 +40,8 @@ export default function Checkout() {
             metodo_pago: metodo,
             total: totalPrecio,
             productos: carrito,
-            estado: metodo === "efectivo" ? "pendiente" : "pagado"
+            estado: metodo === "efectivo" ? "pendiente" : "pagado",
+            hora_recogida: horaRecogida
         })
         if (error) {
             console.error("Error guardando pedido:", error)
@@ -70,12 +73,13 @@ export default function Checkout() {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pdWlrZW5paW11enl4cXNhZmdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMTk0OTksImV4cCI6MjA5MDY5NTQ5OX0.DdxJd73brzD9wYXC_DVtHlayemW747WRxmrn64d7AyE`,
                     },
-                    body: JSON.stringify({ carrito, total: totalPrecio, nombre, email }),
+                    body: JSON.stringify({ carrito, total: totalPrecio, nombre, email, horaRecogida }),
                 }
             )
             const data = await response.json()
             if (data.url) {
                 localStorage.setItem("carrito_confirmado", JSON.stringify(carrito))
+                localStorage.setItem("hora_recogida_confirmada", horaRecogida)
                 window.location.href = data.url
             } else {
                 alert("Error al crear el pago: " + data.error)
@@ -137,7 +141,16 @@ export default function Checkout() {
                         />
                         {errores.email && <p className="text-red-500 text-sm mt-1 ml-2">{errores.email}</p>}
                     </div>
-
+                    <div>
+                        <label className="text-sm font-bold text-zinc-600 mb-1 block">Hora de recogida *</label>
+                        <input
+                            type="time"
+                            value={horaRecogida}
+                            onChange={e => setHoraRecogida(e.target.value)}
+                            className="w-full border border-zinc-200 rounded-full px-5 py-3 focus:outline-none focus:border-[#0d631b]"
+                        />
+                        {errores.horaRecogida && <p className="text-red-500 text-sm mt-1 ml-2">{errores.horaRecogida}</p>}
+                    </div>
                     <div>
                         <label className="text-sm font-bold text-zinc-600 mb-2 block">Método de pago *</label>
                         <div className="flex flex-col gap-3">

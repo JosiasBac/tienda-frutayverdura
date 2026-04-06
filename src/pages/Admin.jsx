@@ -135,6 +135,9 @@ export default function Admin() {
                                 </div>
                             </div>
                             <div className="border-t border-zinc-100 pt-3 flex flex-col gap-1">
+                                {p.hora_recogida && (
+                                    <p className="text-[#0d631b] font-bold text-sm mb-2">🕐 Recogida a las {p.hora_recogida}</p>
+                                )}
                                 {p.productos.map((prod, i) => (
                                     <div key={i} className="flex justify-between text-sm text-zinc-600">
                                         <span>{prod.nombre} — {prod.kg}{prod.unidad}</span>
