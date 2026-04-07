@@ -10,6 +10,7 @@ export default function Admin() {
     const [pedidos, setPedidos] = useState([])
     const [cargando, setCargando] = useState(false)
     const [filtro, setFiltro] = useState("hoy")
+    const [busqueda, setBusqueda] = useState("")
 
     function handleLogin() {
         if (inputPassword === PASSWORD) {
@@ -33,6 +34,31 @@ export default function Admin() {
         const { data, error } = await query
         if (!error) setPedidos(data)
         setCargando(false)
+    }
+
+    async function exportarExcel() {
+        if (pedidosFiltrados.length === 0) return
+        const XLSX = await import("xlsx")
+
+        const filas = pedidosFiltrados.map(p => ({
+            Fecha: new Date(p.created_at).toLocaleString("es-ES"),
+            Cliente: p.nombre,
+            Email: p.email || "",
+            MetodoPago: p.metodo_pago,
+            Estado: p.estado || "",
+            HoraRecogida: p.hora_recogida || "",
+            TotalEUR: Number(p.total?.toFixed?.(2) || p.total || 0),
+            Productos: Array.isArray(p.productos)
+                ? p.productos.map(prod => `${prod.nombre} (${prod.kg}${prod.unidad})`).join(", ")
+                : "",
+        }))
+
+        const hoja = XLSX.utils.json_to_sheet(filas)
+        const libro = XLSX.utils.book_new()
+        XLSX.utils.book_append_sheet(libro, hoja, "Ventas")
+
+        const fecha = new Date().toISOString().slice(0, 10)
+        XLSX.writeFile(libro, `ventas-${fecha}.xlsx`)
     }
 
     useEffect(() => {
@@ -64,12 +90,23 @@ export default function Admin() {
         )
     }
 
-    const totalDia = pedidos.reduce((acc, p) => acc + p.total, 0)
+    const pedidosFiltrados = pedidos.filter(p => {
+        if (!busqueda.trim()) return true
+        const q = busqueda.toLowerCase()
+        const cliente = (p.nombre || "").toLowerCase()
+        const correo = (p.email || "").toLowerCase()
+        const productos = Array.isArray(p.productos)
+            ? p.productos.map(prod => prod.nombre?.toLowerCase?.() || "").join(" ")
+            : ""
+        return cliente.includes(q) || correo.includes(q) || productos.includes(q)
+    })
+
+    const totalDia = pedidosFiltrados.reduce((acc, p) => acc + p.total, 0)
 
     return (
-        <main className="max-w-4xl mx-auto px-6 py-10">
-            <div className="flex justify-between items-center mb-8">
-                <h2 className="text-3xl font-bold">Panel del vendedor</h2>
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-6 sm:mb-8">
+                <h2 className="text-2xl sm:text-3xl font-bold">Panel del vendedor</h2>
                 <button
                     onClick={() => setAutenticado(false)}
                     className="text-zinc-500 font-bold hover:text-zinc-800"
@@ -79,7 +116,7 @@ export default function Admin() {
             </div>
 
             {/* Filtros */}
-            <div className="flex gap-3 mb-6">
+            <div className="flex flex-wrap gap-3 mb-4">
                 <button
                     onClick={() => setFiltro("hoy")}
                     className={`px-6 py-2 rounded-full font-bold transition-colors ${filtro === "hoy" ? "bg-[#0d631b] text-white" : "bg-white text-zinc-600 border border-zinc-200"}`}
@@ -98,13 +135,29 @@ export default function Admin() {
                 >
                     🔄 Actualizar
                 </button>
+                <button
+                    onClick={exportarExcel}
+                    disabled={pedidosFiltrados.length === 0}
+                    className="px-6 py-2 rounded-full font-bold bg-white text-zinc-600 border border-zinc-200 hover:border-[#0d631b] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    📥 Exportar Excel
+                </button>
+            </div>
+            <div className="mb-6">
+                <input
+                    type="text"
+                    value={busqueda}
+                    onChange={e => setBusqueda(e.target.value)}
+                    placeholder="Buscar por cliente, email o producto..."
+                    className="w-full border border-zinc-200 rounded-full px-5 py-3 focus:outline-none focus:border-[#0d631b]"
+                />
             </div>
 
             {/* Resumen */}
             <div className="grid grid-cols-2 gap-4 mb-8">
                 <div className="bg-white rounded-[24px] p-6 shadow-[0_12px_40px_rgba(25,28,28,0.06)]">
                     <p className="text-zinc-500 text-sm mb-1">Pedidos</p>
-                    <p className="text-3xl font-bold">{pedidos.length}</p>
+                    <p className="text-3xl font-bold">{pedidosFiltrados.length}</p>
                 </div>
                 <div className="bg-white rounded-[24px] p-6 shadow-[0_12px_40px_rgba(25,28,28,0.06)]">
                     <p className="text-zinc-500 text-sm mb-1">Total recaudado</p>
@@ -115,11 +168,11 @@ export default function Admin() {
             {/* Lista de pedidos */}
             {cargando ? (
                 <p className="text-center text-zinc-500 py-10">Cargando pedidos...</p>
-            ) : pedidos.length === 0 ? (
+            ) : pedidosFiltrados.length === 0 ? (
                 <p className="text-center text-zinc-500 py-10">No hay pedidos todavía</p>
             ) : (
                 <div className="flex flex-col gap-4">
-                    {pedidos.map(p => (
+                    {pedidosFiltrados.map(p => (
                         <div key={p.id} className="bg-white rounded-[24px] p-6 shadow-[0_12px_40px_rgba(25,28,28,0.06)]">
                             <div className="flex justify-between items-start mb-3">
                                 <div>

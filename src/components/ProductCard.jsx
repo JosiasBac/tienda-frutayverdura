@@ -22,7 +22,7 @@ export default function ProductCard({ nombre, precio, unidad, imagen }) {
     }
 
     return (
-        <div className="bg-white p-5 rounded-[32px] shadow-[0_12px_40px_rgba(25,28,28,0.06)] group transition-all hover:-translate-y-2">
+        <div className="bg-white p-4 sm:p-5 rounded-[24px] sm:rounded-[32px] shadow-[0_12px_40px_rgba(25,28,28,0.06)] group transition-all hover:-translate-y-1 sm:hover:-translate-y-2">
             <div className="rounded-[24px] overflow-hidden aspect-square mb-5 bg-zinc-100">
                 <img
                     src={imagen}
@@ -30,9 +30,9 @@ export default function ProductCard({ nombre, precio, unidad, imagen }) {
                     alt={nombre}
                 />
             </div>
-            <div className="flex justify-between items-center mb-4">
-                <h4 className="font-bold text-xl">{nombre}</h4>
-                <span className="text-[#0d631b] font-bold">{precio.toFixed(2)}€/{unidad}</span>
+            <div className="flex justify-between items-center gap-2 mb-4">
+                <h4 className="font-bold text-lg sm:text-xl">{nombre}</h4>
+                <span className="text-[#0d631b] font-bold text-sm sm:text-base whitespace-nowrap">{precio.toFixed(2)}€/{unidad}</span>
             </div>
 
             {mostrarInput && (
@@ -43,7 +43,7 @@ export default function ProductCard({ nombre, precio, unidad, imagen }) {
                     placeholder={unidad === "Kg" ? "Kilos (ej: 1.5)" : "Unidades (ej: 2)"}
                     value={cantidad}
                     onChange={e => setCantidad(e.target.value)}
-                    className="w-full border border-zinc-200 rounded-full px-4 py-2 mb-3 text-center focus:outline-none focus:border-[#0d631b]"
+                    className="w-full border border-zinc-200 rounded-full px-4 py-2.5 mb-3 text-center focus:outline-none focus:border-[#0d631b]"
                 />
             )}
 
@@ -55,9 +55,9 @@ export default function ProductCard({ nombre, precio, unidad, imagen }) {
 
             <button
                 onClick={handleAñadir}
-                className="w-full bg-[#ffdcc6] text-[#311300] font-bold py-4 rounded-full hover:bg-orange-200 transition-colors"
+                className="w-full bg-[#ffdcc6] text-[#311300] font-bold py-3.5 sm:py-4 rounded-full hover:bg-orange-200 transition-colors"
             >
-                {mostrarInput ? "Confirmar" : "Añadir"}
+                {mostrarInput ? "✅ Confirmar" : "➕ Añadir"}
             </button>
 
             {mostrarInput && (
