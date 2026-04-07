@@ -25,13 +25,13 @@ export default function Carrito() {
 
             <div className="flex flex-col gap-4 mb-10">
                 {carrito.map(p => (
-                    <div key={p.nombre} className="bg-white rounded-[24px] p-5 shadow-[0_12px_40px_rgba(25,28,28,0.06)] flex items-center gap-4">
-                        <img src={p.imagen} alt={p.nombre} className="w-20 h-20 rounded-[16px] object-cover" />
-                        <div className="flex-1">
-                            <h4 className="font-bold text-lg">{p.nombre}</h4>
+                    <div key={p.nombre} className="bg-white rounded-[24px] p-4 sm:p-5 shadow-[0_12px_40px_rgba(25,28,28,0.06)] flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-4">
+                        <img src={p.imagen} alt={p.nombre} className="w-16 h-16 sm:w-20 sm:h-20 rounded-[16px] object-cover shrink-0" />
+                        <div className="flex-1 min-w-[140px]">
+                            <h4 className="font-bold text-lg truncate">{p.nombre}</h4>
                             <span className="text-zinc-500 text-sm">{p.precio.toFixed(2)}€/{p.unidad}</span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 order-3 sm:order-none w-full sm:w-auto justify-start sm:justify-center">
                             <button
                                 onClick={() => cambiarKg(p.nombre, p.kg - 0.5)}
                                 className="w-8 h-8 rounded-full bg-zinc-100 font-bold hover:bg-zinc-200"
@@ -42,12 +42,12 @@ export default function Carrito() {
                                 className="w-8 h-8 rounded-full bg-zinc-100 font-bold hover:bg-zinc-200"
                             >+</button>
                         </div>
-                        <div className="text-right min-w-[70px]">
+                        <div className="text-right ml-auto order-2 sm:order-none min-w-[78px]">
                             <p className="font-bold text-[#0d631b]">{(p.precio * p.kg).toFixed(2)}€</p>
                         </div>
                         <button
                             onClick={() => eliminarProducto(p.nombre)}
-                            className="text-zinc-400 hover:text-red-500 text-xl ml-2"
+                            className="text-zinc-400 hover:text-red-500 text-xl ml-1 sm:ml-2 order-2 sm:order-none"
                         >✕</button>
                     </div>
                 ))}

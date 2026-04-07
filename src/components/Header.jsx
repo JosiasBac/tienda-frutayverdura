@@ -2,7 +2,7 @@ import { useCarrito } from "../context/CarritoContext"
 import { useNavigate } from "react-router-dom"
 
 export default function Header() {
-    const { totalItems } = useCarrito()
+    const { totalItems, toggleCarrito } = useCarrito()
     const navigate = useNavigate()
 
     return (
@@ -20,7 +20,7 @@ export default function Header() {
                         <span className="hidden sm:inline">Tienda</span>
                     </button>
                     <button
-                        onClick={() => navigate("/carrito")}
+                        onClick={toggleCarrito}
                         className="hover:text-[#0d631b] relative inline-flex items-center gap-1.5 px-2 py-1 rounded-full"
                     >
                         <span aria-hidden>🛒</span>

@@ -50,6 +50,24 @@ export default function Checkout() {
         return true
     }
 
+    async function enviarCorreoConfirmacion(productosPedido, metodo) {
+        if (!email) return
+        try {
+            await supabase.functions.invoke("enviar-correo", {
+                body: {
+                    to: email,
+                    nombre,
+                    total: totalPrecio,
+                    metodoPago: metodo,
+                    horaRecogida,
+                    productos: productosPedido,
+                },
+            })
+        } catch (error) {
+            console.error("No se pudo enviar el correo:", error)
+        }
+    }
+
     async function handleEfectivo() {
         setCargando(true)
         const ok = await guardarPedido("efectivo")
@@ -58,6 +76,7 @@ export default function Checkout() {
             alert("Hubo un error al guardar el pedido, inténtalo de nuevo")
             return
         }
+        await enviarCorreoConfirmacion(carrito, "efectivo")
         vaciarCarrito()
         navigate("/confirmacion", { state: { nombre, email, metodoPago: "efectivo", total: totalPrecio } })
     }

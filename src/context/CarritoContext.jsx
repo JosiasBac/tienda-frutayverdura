@@ -7,6 +7,7 @@ export function CarritoProvider({ children }) {
         const guardado = localStorage.getItem("carrito")
         return guardado ? JSON.parse(guardado) : []
     })
+    const [carritoAbierto, setCarritoAbierto] = useState(false)
 
     useEffect(() => {
         localStorage.setItem("carrito", JSON.stringify(carrito))
@@ -39,11 +40,23 @@ export function CarritoProvider({ children }) {
         setCarrito([])
     }
 
+    function abrirCarrito() {
+        setCarritoAbierto(true)
+    }
+
+    function cerrarCarrito() {
+        setCarritoAbierto(false)
+    }
+
+    function toggleCarrito() {
+        setCarritoAbierto(prev => !prev)
+    }
+
     const totalItems = carrito.reduce((acc, p) => acc + p.kg, 0)
     const totalPrecio = carrito.reduce((acc, p) => acc + p.precio * p.kg, 0)
 
     return (
-        <CarritoContext.Provider value={{ carrito, añadirProducto, cambiarKg, eliminarProducto, vaciarCarrito, totalItems, totalPrecio }}>
+        <CarritoContext.Provider value={{ carrito, añadirProducto, cambiarKg, eliminarProducto, vaciarCarrito, totalItems, totalPrecio, carritoAbierto, abrirCarrito, cerrarCarrito, toggleCarrito }}>
             {children}
         </CarritoContext.Provider>
     )

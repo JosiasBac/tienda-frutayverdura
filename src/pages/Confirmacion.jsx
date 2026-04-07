@@ -32,6 +32,18 @@ export default function Confirmacion() {
                 estado: "pagado",
                 hora_recogida: horaGuardada || horaRecogida
             }).then(() => {
+                if (email) {
+                    supabase.functions.invoke("enviar-correo", {
+                        body: {
+                            to: email,
+                            nombre,
+                            total,
+                            metodoPago: "stripe",
+                            horaRecogida: horaGuardada || horaRecogida,
+                            productos,
+                        },
+                    }).catch((error) => console.error("No se pudo enviar correo:", error))
+                }
                 vaciarCarrito()
             })
         }
