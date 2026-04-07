@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { carrito, total, nombre, email } = await req.json()
+    const { carrito, total, nombre, email, horaRecogida } = await req.json()
 
     const lineItems = carrito.map((p: any) => ({
       price_data: {

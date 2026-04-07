@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useCarrito } from "../context/CarritoContext"
-import { useNavigate } from "react-router-dom"
+import { Navigate, useNavigate } from "react-router-dom"
 import { supabase } from "../supabase"
 
 export default function Checkout() {
@@ -90,10 +90,7 @@ export default function Checkout() {
         setCargando(false)
     }
 
-    if (carrito.length === 0) {
-        navigate("/")
-        return null
-    }
+    if (carrito.length === 0) return <Navigate to="/" replace />
 
     return (
         <main className="max-w-2xl mx-auto px-6 py-10">

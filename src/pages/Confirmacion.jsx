@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
+import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { supabase } from "../supabase"
 import { useCarrito } from "../context/CarritoContext"
 
@@ -37,10 +37,7 @@ export default function Confirmacion() {
         }
     }, [])
 
-    if (!nombre) {
-        navigate("/")
-        return null
-    }
+    if (!nombre) return <Navigate to="/" replace />
 
     return (
         <main className="max-w-xl mx-auto px-6 py-20 text-center">
