@@ -3,20 +3,21 @@ import { useCarrito } from "../context/CarritoContext"
 
 export default function ProductCard({ nombre, precio, unidad, imagen }) {
     const { añadirProducto } = useCarrito()
-    const [cantidad, setCantidad] = useState("")
+    const [cantidad, setCantidad] = useState(0)
     const [mostrarInput, setMostrarInput] = useState(false)
     const [mensaje, setMensaje] = useState(false)
+    const paso = unidad === "Kg" ? 0.5 : 1
 
     function handleAñadir() {
         if (!mostrarInput) {
             setMostrarInput(true)
+            setCantidad(0)
             return
         }
-        const num = parseFloat(cantidad)
-        if (!num || num <= 0.5) return
-        añadirProducto({ nombre, precio, unidad, imagen, kg: num })
+        if (cantidad <= 0) return
+        añadirProducto({ nombre, precio, unidad, imagen, kg: cantidad })
         setMostrarInput(false)
-        setCantidad("")
+        setCantidad(0)
         setMensaje(true)
         setTimeout(() => setMensaje(false), 2000)
     }
@@ -36,15 +37,23 @@ export default function ProductCard({ nombre, precio, unidad, imagen }) {
             </div>
 
             {mostrarInput && (
-                <input
-                    type="number"
-                    min={unidad === "Kg" ? "0.5" : "1"}
-                    step={unidad === "Kg" ? "0.5" : "1"}
-                    placeholder={unidad === "Kg" ? "Kilos (ej: 1.5)" : "Unidades (ej: 2)"}
-                    value={cantidad}
-                    onChange={e => setCantidad(e.target.value)}
-                    className="w-full border border-zinc-200 rounded-full px-4 py-2.5 mb-3 text-center focus:outline-none focus:border-[#0d631b]"
-                />
+                <div className="flex items-center justify-center gap-3 mb-3">
+                    <button
+                        onClick={() => setCantidad(prev => Math.max(0, Number((prev - paso).toFixed(2))))}
+                        className="w-9 h-9 rounded-full bg-zinc-100 font-bold hover:bg-zinc-200"
+                    >
+                        −
+                    </button>
+                    <span className="min-w-[110px] text-center font-bold border border-zinc-200 rounded-full px-4 py-2">
+                        {cantidad}{unidad}
+                    </span>
+                    <button
+                        onClick={() => setCantidad(prev => Number((prev + paso).toFixed(2)))}
+                        className="w-9 h-9 rounded-full bg-zinc-100 font-bold hover:bg-zinc-200"
+                    >
+                        +
+                    </button>
+                </div>
             )}
 
             {mensaje && (
@@ -55,14 +64,15 @@ export default function ProductCard({ nombre, precio, unidad, imagen }) {
 
             <button
                 onClick={handleAñadir}
-                className="w-full bg-[#ffdcc6] text-[#311300] font-bold py-3.5 sm:py-4 rounded-full hover:bg-orange-200 transition-colors"
+                disabled={mostrarInput && cantidad <= 0}
+                className="w-full bg-[#ffdcc6] text-[#311300] font-bold py-3.5 sm:py-4 rounded-full hover:bg-orange-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {mostrarInput ? "✅ Confirmar" : "➕ Añadir"}
             </button>
 
             {mostrarInput && (
                 <button
-                    onClick={() => { setMostrarInput(false); setCantidad("") }}
+                    onClick={() => { setMostrarInput(false); setCantidad(0) }}
                     className="w-full mt-2 text-zinc-400 text-sm hover:text-zinc-600"
                 >
                     Cancelar

@@ -1,3 +1,5 @@
+import { Resend } from "npm:resend@4.0.1"
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -47,29 +49,22 @@ Deno.serve(async (req) => {
       </div>
     `
 
-    const resendResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: [to],
-        subject: "Tu pedido ha sido confirmado",
-        html,
-      }),
+    const resend = new Resend(apiKey)
+    const { data, error } = await resend.emails.send({
+      from: fromEmail,
+      to,
+      subject: "Tu pedido ha sido confirmado",
+      html,
     })
 
-    const resendData = await resendResponse.json()
-    if (!resendResponse.ok) {
-      return new Response(JSON.stringify({ error: resendData?.message || "Error enviando correo" }), {
+    if (error) {
+      return new Response(JSON.stringify({ error: error.message || "Error enviando correo" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       })
     }
 
-    return new Response(JSON.stringify({ ok: true, id: resendData?.id }), {
+    return new Response(JSON.stringify({ ok: true, id: data?.id }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
   } catch (error) {

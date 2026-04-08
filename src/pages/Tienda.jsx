@@ -1,18 +1,23 @@
-
+import { useState } from "react"
 import ProductCard from "../components/ProductCard"
 
 const productos = [
-    { nombre: "Tomates", precio: 2.45, unidad: "Kg", imagen: "https://images.unsplash.com/photo-1582284540020-8acbe03f4924?q=60&w=800" },
-    { nombre: "Patatas", precio: 1.00, unidad: "Kg", imagen: "https://images.unsplash.com/photo-1508313880080-c4bef0730395?q=60&w=800" },
-    { nombre: "Naranjas", precio: 1.80, unidad: "Kg", imagen: "https://images.unsplash.com/photo-1547514701-42782101795e?q=60&w=800" },
-    { nombre: "Lechugas", precio: 0.90, unidad: "ud", imagen: "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?q=60&w=800" },
-    { nombre: "Fresas", precio: 3.20, unidad: "Kg", imagen: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?q=60&w=800" },
-    { nombre: "Pimientos", precio: 2.10, unidad: "Kg", imagen: "https://images.unsplash.com/photo-1525607551316-4a8e16d1f9ba?q=60&w=800" },
-    { nombre: "Plátanos", precio: 1.60, unidad: "Kg", imagen: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?q=60&w=800" },
-    { nombre: "Zanahorias", precio: 1.20, unidad: "Kg", imagen: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?q=60&w=800" },
+    { nombre: "Tomates", precio: 2.45, unidad: "Kg", categoria: "verduras", imagen: "https://images.unsplash.com/photo-1582284540020-8acbe03f4924?q=60&w=800" },
+    { nombre: "Patatas", precio: 1.00, unidad: "Kg", categoria: "verduras", imagen: "https://images.unsplash.com/photo-1508313880080-c4bef0730395?q=60&w=800" },
+    { nombre: "Naranjas", precio: 1.80, unidad: "Kg", categoria: "frutas", imagen: "https://images.unsplash.com/photo-1547514701-42782101795e?q=60&w=800" },
+    { nombre: "Lechugas", precio: 0.90, unidad: "ud", categoria: "verduras", imagen: "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?q=60&w=800" },
+    { nombre: "Fresas", precio: 3.20, unidad: "Kg", categoria: "frutas", imagen: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?q=60&w=800" },
+    { nombre: "Pimientos", precio: 2.10, unidad: "Kg", categoria: "verduras", imagen: "https://images.unsplash.com/photo-1525607551316-4a8e16d1f9ba?q=60&w=800" },
+    { nombre: "Plátanos", precio: 1.60, unidad: "Kg", categoria: "frutas", imagen: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?q=60&w=800" },
+    { nombre: "Zanahorias", precio: 1.20, unidad: "Kg", categoria: "verduras", imagen: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?q=60&w=800" },
 ]
 
 export default function Tienda() {
+    const [categoriaActiva, setCategoriaActiva] = useState("todos")
+    const productosFiltrados = categoriaActiva === "todos"
+        ? productos
+        : productos.filter(p => p.categoria === categoriaActiva)
+
     return (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
@@ -36,8 +41,28 @@ export default function Tienda() {
         </section>
 
             <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-10 text-center">Nuestros Productos</h2>
+            <div className="flex flex-wrap justify-center gap-3 mb-6 sm:mb-8">
+                <button
+                    onClick={() => setCategoriaActiva("todos")}
+                    className={`px-5 py-2 rounded-full font-bold border transition-colors ${categoriaActiva === "todos" ? "bg-[#0d631b] text-white border-[#0d631b]" : "bg-white text-zinc-600 border-zinc-200"}`}
+                >
+                    Todos
+                </button>
+                <button
+                    onClick={() => setCategoriaActiva("frutas")}
+                    className={`px-5 py-2 rounded-full font-bold border transition-colors ${categoriaActiva === "frutas" ? "bg-[#0d631b] text-white border-[#0d631b]" : "bg-white text-zinc-600 border-zinc-200"}`}
+                >
+                    Frutas
+                </button>
+                <button
+                    onClick={() => setCategoriaActiva("verduras")}
+                    className={`px-5 py-2 rounded-full font-bold border transition-colors ${categoriaActiva === "verduras" ? "bg-[#0d631b] text-white border-[#0d631b]" : "bg-white text-zinc-600 border-zinc-200"}`}
+                >
+                    Verduras
+                </button>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-8">
-                {productos.map(p => (
+                {productosFiltrados.map(p => (
                     <ProductCard key={p.nombre} {...p} />
                 ))}
             </div>

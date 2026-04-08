@@ -6,6 +6,7 @@ import Checkout from "./pages/Checkout"
 import Admin from "./pages/Admin"
 import Confirmacion from "./pages/Confirmacion"
 import CartDrawer from "./components/CartDrawer"
+import ScrollToTop from "./components/ScrollToTop"
 
 function App() {
     return (
@@ -13,6 +14,7 @@ function App() {
             <div className="bg-[#0d631b] text-white py-2 text-center text-sm font-bold">
                 Recoja su pedido en menos de 20 minutos
             </div>
+            <ScrollToTop />
             <Header />
             <Routes>
                 <Route path="/" element={<Tienda />} />

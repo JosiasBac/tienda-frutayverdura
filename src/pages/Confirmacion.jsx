@@ -42,6 +42,8 @@ export default function Confirmacion() {
                             horaRecogida: horaGuardada || horaRecogida,
                             productos,
                         },
+                    }).then(({ error }) => {
+                        if (error) console.error("Error enviando correo:", error.message || error)
                     }).catch((error) => console.error("No se pudo enviar correo:", error))
                 }
                 vaciarCarrito()

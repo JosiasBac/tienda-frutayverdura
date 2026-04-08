@@ -53,7 +53,7 @@ export default function Checkout() {
     async function enviarCorreoConfirmacion(productosPedido, metodo) {
         if (!email) return
         try {
-            await supabase.functions.invoke("enviar-correo", {
+            const { error } = await supabase.functions.invoke("enviar-correo", {
                 body: {
                     to: email,
                     nombre,
@@ -63,6 +63,7 @@ export default function Checkout() {
                     productos: productosPedido,
                 },
             })
+            if (error) console.error("Error enviando correo:", error.message || error)
         } catch (error) {
             console.error("No se pudo enviar el correo:", error)
         }
